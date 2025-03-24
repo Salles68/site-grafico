@@ -1,0 +1,722 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Criador de Gráficos da Andressa</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    <style>
+        :root {
+            --primary: #4361ee;
+            --secondary: #3f37c9;
+            --accent: #4895ef;
+            --light: #f8f9fa;
+            --dark: #212529;
+            --success: #4cc9f0;
+            --danger: #f72585;
+            --warning: #f8961e;
+            --info: #4361ee;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f0f2f5;
+            color: var(--dark);
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        header {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: rgb(255, 255, 255);
+            padding: 20px 0;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            margin-bottom: 30px;
+        }
+        
+        h1 {
+            font-size: 2.2rem;
+            font-weight: 700;
+            text-align: center;
+        }
+        
+        .subtitle {
+            text-align: center;
+            margin-bottom: 10px;
+            color: rgba(255, 255, 255, 0.9);
+        }
+        
+        .card {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+            padding: 25px;
+            margin-bottom: 30px;
+        }
+        
+        .chart-container {
+            height: 450px;
+            margin: 20px 0;
+        }
+        
+        .controls {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+            color: var(--dark);
+        }
+        
+        input, select, button {
+            width: 100%;
+            padding: 10px 12px;
+            border-radius: 6px;
+            border: 1px solid #ddd;
+            font-size: 1rem;
+        }
+        
+        input:focus, select:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.2);
+        }
+        
+        button {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+            transition: background-color 0.2s, transform 0.1s;
+        }
+        
+        button:hover {
+            background-color: var(--secondary);
+        }
+        
+        button:active {
+            transform: translateY(1px);
+        }
+        
+        .btn-danger {
+            background-color: var(--danger);
+        }
+        
+        .btn-danger:hover {
+            background-color: #e5236f;
+        }
+        
+        .btn-success {
+            background-color: var(--success);
+        }
+        
+        .btn-success:hover {
+            background-color: #32b0d9;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+        
+        table th, table td {
+            border: 1px solid #ddd;
+            padding: 10px;
+            text-align: left;
+        }
+        
+        table th {
+            background-color: #f2f2f2;
+            font-weight: 600;
+        }
+        
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+        
+        .action-btn {
+            padding: 5px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            color: white;
+            border: none;
+            width: auto;
+            margin: 0 3px;
+        }
+        
+        .delete-btn {
+            background-color: var(--danger);
+        }
+        
+        .chart-options {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .chart-type-btn {
+            padding: 8px 15px;
+            border-radius: 20px;
+            background-color: #e9ecef;
+            color: var(--dark);
+            border: none;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: all 0.2s;
+            width: auto;
+        }
+        
+        .chart-type-btn.active {
+            background-color: var(--primary);
+            color: white;
+        }
+        
+        .color-picker-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        
+        .color-option {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            cursor: pointer;
+            border: 2px solid transparent;
+            transition: transform 0.2s;
+        }
+        
+        .color-option:hover {
+            transform: scale(1.1);
+        }
+        
+        .color-option.selected {
+            border-color: var(--dark);
+        }
+        
+        .tabs {
+            display: flex;
+            border-bottom: 1px solid #ddd;
+            margin-bottom: 20px;
+        }
+        
+        .tab {
+            padding: 10px 20px;
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+            font-weight: 500;
+        }
+        
+        .tab.active {
+            border-bottom-color: var(--primary);
+            color: var(--primary);
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        footer {
+            text-align: center;
+            margin-top: 30px;
+            color: #777;
+            font-size: 0.9rem;
+        }
+        
+        @media (max-width: 768px) {
+            .controls {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1>Criador de Gráficos da Andressa</h1>
+            <p class="subtitle">Ferramenta para visualização de dados</p>
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="card">
+            <div class="tabs">
+                <div class="tab active" data-tab="data-entry">Entrada de Dados</div>
+                <div class="tab" data-tab="chart-customize">Personalizar Gráfico</div>
+                <div class="tab" data-tab="export">Exportar</div>
+            </div>
+            
+            <div class="tab-content active" id="data-entry">
+                <div class="controls">
+                    <div>
+                        <div class="form-group">
+                            <label for="label">Rótulo:</label>
+                            <input type="text" id="label" placeholder="Ex: Janeiro">
+                        </div>
+                        <div class="form-group">
+                            <label for="value">Valor:</label>
+                            <input type="number" id="value" placeholder="Ex: 150">
+                        </div>
+                        <div class="form-group">
+                            <button id="addBtn" onclick="addData()">Adicionar Dados</button>
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <div class="form-group">
+                            <label for="datasetName">Nome do Conjunto de Dados:</label>
+                            <input type="text" id="datasetName" value="Meus Dados" placeholder="Ex: Vendas 2023">
+                        </div>
+                        <div class="form-group">
+                            <label for="importData">Importar Dados (CSV):</label>
+                            <input type="file" id="importData" accept=".csv">
+                        </div>
+                        <div class="form-group">
+                            <button class="btn-danger" onclick="clearData()">Limpar Todos os Dados</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <h3>Dados Atuais</h3>
+                <div style="max-height: 300px; overflow-y: auto;">
+                    <table id="dataTable">
+                        <thead>
+                            <tr>
+                                <th>Rótulo</th>
+                                <th>Valor</th>
+                                <th>Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Dados serão inseridos aqui -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            
+            <div class="tab-content" id="chart-customize">
+                <div class="controls">
+                    <div>
+                        <div class="form-group">
+                            <label for="chartTitle">Título do Gráfico:</label>
+                            <input type="text" id="chartTitle" placeholder="Meu Gráfico" value="Meu Gráfico">
+                        </div>
+                        <div class="form-group">
+                            <label>Tipo de Gráfico:</label>
+                            <div class="chart-options">
+                                <button class="chart-type-btn active" data-type="bar">Barras</button>
+                                <button class="chart-type-btn" data-type="line">Linha</button>
+                                <button class="chart-type-btn" data-type="pie">Pizza</button>
+                                <button class="chart-type-btn" data-type="doughnut">Rosca</button>
+                                <button class="chart-type-btn" data-type="polarArea">Área Polar</button>
+                                <button class="chart-type-btn" data-type="radar">Radar</button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <div class="form-group">
+                            <label>Esquema de Cores:</label>
+                            <select id="colorScheme" onchange="updateColorScheme()">
+                                <option value="default">Padrão</option>
+                                <option value="vibrant">Vibrante</option>
+                                <option value="pastel">Pastel</option>
+                                <option value="monochrome">Monocromático</option>
+                                <option value="custom">Personalizado</option>
+                            </select>
+                        </div>
+                        <div class="form-group" id="customColorsContainer" style="display: none;">
+                            <label>Cores Personalizadas:</label>
+                            <div class="color-picker-container">
+                                <div class="color-option selected" style="background-color: #4361ee;" data-color="#4361ee"></div>
+                                <div class="color-option" style="background-color: #3a0ca3;" data-color="#3a0ca3"></div>
+                                <div class="color-option" style="background-color: #4cc9f0;" data-color="#4cc9f0"></div>
+                                <div class="color-option" style="background-color: #f72585;" data-color="#f72585"></div>
+                                <div class="color-option" style="background-color: #7209b7;" data-color="#7209b7"></div>
+                                <div class="color-option" style="background-color: #4d908e;" data-color="#4d908e"></div>
+                                <div class="color-option" style="background-color: #f8961e;" data-color="#f8961e"></div>
+                                <div class="color-option" style="background-color: #577590;" data-color="#577590"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <button class="btn-success" onclick="applyChanges()">Aplicar Alterações</button>
+            </div>
+            
+            <div class="tab-content" id="export">
+                <div class="controls">
+                    <div>
+                        <div class="form-group">
+                            <label for="exportFormat">Formato de Exportação:</label>
+                            <select id="exportFormat">
+                                <option value="png">PNG</option>
+                                <option value="jpeg">JPEG</option>
+                                <option value="csv">CSV (Dados)</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <button class="btn-success" onclick="exportChart()">Exportar Gráfico</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card">
+            <h3 id="displayedChartTitle">Meu Gráfico</h3>
+            <div class="chart-container">
+                <canvas id="myChart"></canvas>
+            </div>
+        </div>
+    </div>
+    
+    <footer>
+        <p>Criado por Andressa &copy; 2025</p>
+    </footer>
+    
+    <script>
+        // Dados do gráfico e configurações
+        let chartData = {
+            labels: [],
+            values: []
+        };
+        
+        // Paletas de cores predefinidas
+        const colorPalettes = {
+            default: ['#4361ee', '#3a0ca3', '#4cc9f0', '#f72585', '#7209b7', '#4d908e', '#f8961e', '#577590'],
+            vibrant: ['#f94144', '#f3722c', '#f8961e', '#f9c74f', '#90be6d', '#43aa8b', '#4d908e', '#577590'],
+            pastel: ['#ffadad', '#ffd6a5', '#fdffb6', '#caffbf', '#9bf6ff', '#a0c4ff', '#bdb2ff', '#ffc6ff'],
+            monochrome: ['#03071e', '#370617', '#6a040f', '#9d0208', '#d00000', '#dc2f02', '#e85d04', '#f48c06']
+        };
+        
+        let selectedColorPalette = 'default';
+        let customColor = '#4361ee';
+        let chartType = 'bar';
+        let chartTitle = 'Meu Gráfico';
+        
+        // Inicializar o gráfico
+        const ctx = document.getElementById('myChart').getContext('2d');
+        let myChart = new Chart(ctx, {
+            type: chartType,
+            data: {
+                labels: chartData.labels,
+                datasets: [{
+                    label: 'Valores',
+                    data: chartData.values,
+                    backgroundColor: colorPalettes.default.map(color => color + '99'), // Adiciona transparência
+                    borderColor: colorPalettes.default,
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    title: {
+                        display: true,
+                        text: chartTitle,
+                        font: {
+                            size: 18
+                        }
+                    },
+                    legend: {
+                        display: true,
+                        position: 'top'
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+        
+        // Função para adicionar dados
+        function addData() {
+            const label = document.getElementById('label').value;
+            const value = parseFloat(document.getElementById('value').value);
+            
+            if (label && !isNaN(value)) {
+                // Adicionar dados aos arrays
+                chartData.labels.push(label);
+                chartData.values.push(value);
+                
+                // Atualizar o gráfico e a tabela
+                updateChart();
+                updateTable();
+                
+                // Limpar campos
+                document.getElementById('label').value = '';
+                document.getElementById('value').value = '';
+            } else {
+                alert('Por favor, insira um rótulo e um valor válido!');
+            }
+        }
+        
+        // Função para limpar dados
+        function clearData() {
+            if (confirm('Tem certeza que deseja limpar todos os dados?')) {
+                chartData.labels = [];
+                chartData.values = [];
+                updateChart();
+                updateTable();
+            }
+        }
+        
+        // Função para atualizar a tabela de dados
+        function updateTable() {
+            const tableBody = document.querySelector('#dataTable tbody');
+            tableBody.innerHTML = '';
+            
+            chartData.labels.forEach((label, index) => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${label}</td>
+                    <td>${chartData.values[index]}</td>
+                    <td>
+                        <button class="action-btn delete-btn" onclick="deleteRow(${index})">Excluir</button>
+                    </td>
+                `;
+                tableBody.appendChild(row);
+            });
+        }
+        
+        // Função para excluir uma linha
+        function deleteRow(index) {
+            chartData.labels.splice(index, 1);
+            chartData.values.splice(index, 1);
+            updateChart();
+            updateTable();
+        }
+        
+        // Função para atualizar o gráfico
+        function updateChart() {
+            // Atualizar dados
+            myChart.data.labels = chartData.labels;
+            myChart.data.datasets[0].data = chartData.values;
+            
+            // Aplicar cores baseadas na paleta selecionada
+            const colors = selectedColorPalette === 'custom' 
+                ? Array(chartData.labels.length).fill(customColor)
+                : chartData.labels.map((_, i) => colorPalettes[selectedColorPalette][i % colorPalettes[selectedColorPalette].length]);
+            
+            myChart.data.datasets[0].backgroundColor = colors.map(color => color + '99');
+            myChart.data.datasets[0].borderColor = colors;
+            
+            // Aplicar título
+            myChart.options.plugins.title.text = chartTitle;
+            document.getElementById('displayedChartTitle').textContent = chartTitle;
+            
+            // Configurar escalas baseado no tipo
+            if (['pie', 'doughnut', 'polarArea'].includes(chartType)) {
+                myChart.options.scales = {}; // Remover escalas para gráficos circulares
+            } else {
+                myChart.options.scales = {
+                    y: {
+                        beginAtZero: true
+                    }
+                };
+            }
+            
+            // Atualizar o dataset label
+            myChart.data.datasets[0].label = document.getElementById('datasetName').value;
+            
+            myChart.update();
+        }
+        
+        // Função para aplicar mudanças na personalização
+        function applyChanges() {
+            chartTitle = document.getElementById('chartTitle').value || 'Meu Gráfico';
+            
+            // Destruir e recriar o gráfico para alterar o tipo
+            myChart.destroy();
+            myChart = new Chart(ctx, {
+                type: chartType,
+                data: {
+                    labels: chartData.labels,
+                    datasets: [{
+                        label: document.getElementById('datasetName').value,
+                        data: chartData.values,
+                        backgroundColor: myChart.data.datasets[0].backgroundColor,
+                        borderColor: myChart.data.datasets[0].borderColor,
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: chartTitle,
+                            font: {
+                                size: 18
+                            }
+                        },
+                        legend: {
+                            display: true,
+                            position: 'top'
+                        }
+                    },
+                    scales: ['pie', 'doughnut', 'polarArea'].includes(chartType) ? {} : {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+            
+            updateChart();
+            
+            // Mudar para a aba de visualização
+            document.querySelector('.tab[data-tab="data-entry"]').click();
+        }
+        
+        // Exportar gráfico
+        function exportChart() {
+            const format = document.getElementById('exportFormat').value;
+            
+            if (format === 'csv') {
+                // Exportar dados como CSV
+                let csvContent = "data:text/csv;charset=utf-8,";
+                csvContent += "Rótulo,Valor\n";
+                
+                chartData.labels.forEach((label, i) => {
+                    csvContent += `${label},${chartData.values[i]}\n`;
+                });
+                
+                const encodedUri = encodeURI(csvContent);
+                const link = document.createElement("a");
+                link.setAttribute("href", encodedUri);
+                link.setAttribute("download", "dados_grafico.csv");
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                
+            } else {
+                // Exportar como imagem
+                const link = document.createElement('a');
+                link.href = myChart.toBase64Image(format);
+                link.download = `meu_grafico.${format}`;
+                link.click();
+            }
+        }
+        
+        // Função para atualizar o esquema de cores
+        function updateColorScheme() {
+            selectedColorPalette = document.getElementById('colorScheme').value;
+            document.getElementById('customColorsContainer').style.display = 
+                selectedColorPalette === 'custom' ? 'block' : 'none';
+            updateChart();
+        }
+        
+        // Configurar tabs
+        document.querySelectorAll('.tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                // Remover active de todas as tabs
+                document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+                document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+                
+                // Adicionar active para a tab clicada
+                tab.classList.add('active');
+                document.getElementById(tab.getAttribute('data-tab')).classList.add('active');
+            });
+        });
+        
+        // Configurar botões de tipo de gráfico
+        document.querySelectorAll('.chart-type-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.chart-type-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                chartType = btn.getAttribute('data-type');
+            });
+        });
+        
+        // Configurar opções de cores personalizadas
+        document.querySelectorAll('.color-option').forEach(option => {
+            option.addEventListener('click', () => {
+                document.querySelectorAll('.color-option').forEach(o => o.classList.remove('selected'));
+                option.classList.add('selected');
+                customColor = option.getAttribute('data-color');
+                if (selectedColorPalette === 'custom') {
+                    updateChart();
+                }
+            });
+        });
+        
+        // Configurar importação de CSV
+        document.getElementById('importData').addEventListener('change', (event) => {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const contents = e.target.result;
+                    const lines = contents.split('\n');
+                    
+                    // Limpar dados existentes
+                    chartData.labels = [];
+                    chartData.values = [];
+                    
+                    // Processar cada linha
+                    lines.forEach((line, index) => {
+                        if (index === 0 || line.trim() === '') return; // Pular cabeçalho e linhas vazias
+                        
+                        const parts = line.split(',');
+                        if (parts.length >= 2) {
+                            const label = parts[0].trim();
+                            const value = parseFloat(parts[1].trim());
+                            
+                            if (label && !isNaN(value)) {
+                                chartData.labels.push(label);
+                                chartData.values.push(value);
+                            }
+                        }
+                    });
+                    
+                    updateChart();
+                    updateTable();
+                };
+                reader.readAsText(file);
+            }
+        });
+        
+        // Dados iniciais de exemplo
+        chartData.labels = ['Janeiro', 'Fevereiro', 'Março', 'Abril'];
+        chartData.values = [120, 190, 150, 220];
+        updateChart();
+        updateTable();
+    </script>
+</body>
+</html>
